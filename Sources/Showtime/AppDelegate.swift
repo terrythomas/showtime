@@ -3,18 +3,13 @@ import ShowtimeCore
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    private var statusItem: NSStatusItem?
+    private var statusController: StatusItemController?
     let model = AppModel()
     private var alertController: AlertPanelController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
-        let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        item.button?.image = NSImage(systemSymbolName: "calendar.badge.clock", accessibilityDescription: "Showtime")
-        let menu = NSMenu()
-        menu.addItem(withTitle: "Quit Showtime", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
-        item.menu = menu
-        statusItem = item
+        statusController = StatusItemController(model: model, openSettings: { [weak self] in self?.openSettings() })
         let alerts = AlertPanelController(model: model)
         alertController = alerts
         model.onShowAlerts = { events in
@@ -22,5 +17,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             alerts.present(events)
         }
         model.start()
+    }
+
+    func openSettings() {
+        // Settings window arrives in Task 12.
     }
 }
