@@ -19,7 +19,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         model.start()
     }
 
+    private lazy var settingsController = SettingsWindowController(model: model)
+
     func openSettings() {
-        // Settings window arrives in Task 12.
+        settingsController.show()
     }
 }
