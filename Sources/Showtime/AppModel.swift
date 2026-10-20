@@ -60,7 +60,13 @@ final class AppModel: ObservableObject {
 
     func isHidden(_ e: CalendarEvent) -> Bool { overrides.resolved(for: e).hidden }
 
+    /// Whether work hours will drop every remaining alert for the event.
+    func alertsBlockedByWorkHours(_ e: CalendarEvent) -> Bool {
+        AlertScheduler.allAlertsOutsideWorkHours(e, ctx: engine.context())
+    }
+
     func refreshEvents() {
+        calendar.refreshAuthorization()
         let now = Date()
         allEvents = calendar.events(from: now.addingTimeInterval(-6 * 3600),
                                     to: now.addingTimeInterval(TimeInterval(settings.upcomingDays) * 86400))

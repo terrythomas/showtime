@@ -35,7 +35,8 @@ public struct ShowtimeSettings: Codable, Equatable, Sendable {
     public var soundVolume = 1.0
     public var screenMode: ScreenMode = .active
     public var shortcutDelaySeconds = 1.0
-    public var activeCalendarIDs: Set<String>? = nil
+    /// Calendars the user turned off. A denylist, so calendars added later are included.
+    public var disabledCalendarIDs: Set<String> = []
     public var onlyAccepted = false
     public var onlyWithVideo = false
     public var includeAllDay = false
@@ -55,7 +56,7 @@ public struct ShowtimeSettings: Codable, Equatable, Sendable {
 
     private enum CodingKeys: String, CodingKey {
         case alertOffsetsMinutes, snooze1Minutes, snooze2Minutes, autoCloseEnabled, autoCloseMinutes
-        case soundName, repeatSound, soundVolume, screenMode, shortcutDelaySeconds, activeCalendarIDs
+        case soundName, repeatSound, soundVolume, screenMode, shortcutDelaySeconds, disabledCalendarIDs
         case onlyAccepted, onlyWithVideo, includeAllDay, allDayAlertMinuteOfDay, workHours, exclusionRules
         case includeTravelTime, menuShowNextTitle, menuTitleLength, menuCountdown, menuNextEventWindowHours
         case menuShowCurrentEvent, upcomingDays, hotkeys
@@ -79,7 +80,7 @@ public struct ShowtimeSettings: Codable, Equatable, Sendable {
         soundVolume = v(.soundVolume, d.soundVolume)
         screenMode = v(.screenMode, d.screenMode)
         shortcutDelaySeconds = v(.shortcutDelaySeconds, d.shortcutDelaySeconds)
-        activeCalendarIDs = (try? c.decodeIfPresent(Set<String>.self, forKey: .activeCalendarIDs)) ?? nil
+        disabledCalendarIDs = v(.disabledCalendarIDs, d.disabledCalendarIDs)
         onlyAccepted = v(.onlyAccepted, d.onlyAccepted)
         onlyWithVideo = v(.onlyWithVideo, d.onlyWithVideo)
         includeAllDay = v(.includeAllDay, d.includeAllDay)
@@ -108,7 +109,7 @@ public struct ShowtimeSettings: Codable, Equatable, Sendable {
         try c.encode(soundVolume, forKey: .soundVolume)
         try c.encode(screenMode, forKey: .screenMode)
         try c.encode(shortcutDelaySeconds, forKey: .shortcutDelaySeconds)
-        try c.encodeIfPresent(activeCalendarIDs, forKey: .activeCalendarIDs)
+        try c.encode(disabledCalendarIDs, forKey: .disabledCalendarIDs)
         try c.encode(onlyAccepted, forKey: .onlyAccepted)
         try c.encode(onlyWithVideo, forKey: .onlyWithVideo)
         try c.encode(includeAllDay, forKey: .includeAllDay)

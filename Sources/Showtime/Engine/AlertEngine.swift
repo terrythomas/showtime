@@ -43,7 +43,7 @@ final class AlertEngine {
         model.expirePauseIfNeeded(now: now)
         state.prune(now: now)
 
-        let result = AlertScheduler.evaluate(events: model.allEvents, now: now, ctx: context(model))
+        let result = AlertScheduler.evaluate(events: model.allEvents, now: now, ctx: context())
         for e in result.show + result.suppressed {
             state.markFired(e, at: now)
         }
@@ -53,7 +53,7 @@ final class AlertEngine {
         }
 
         fireTimer?.invalidate()
-        if let next = AlertScheduler.nextFireDate(events: model.allEvents, now: now, ctx: context(model)) {
+        if let next = AlertScheduler.nextFireDate(events: model.allEvents, now: now, ctx: context()) {
             let delay = max(next.timeIntervalSince(now), 0.5)
             fireTimer = Timer(timeInterval: delay, repeats: false) { [weak self] _ in
                 MainActor.assumeIsolated { self?.tick() }
@@ -62,9 +62,9 @@ final class AlertEngine {
         }
     }
 
-    private func context(_ model: AppModel) -> SchedulingContext {
-        SchedulingContext(settings: model.settings, overrides: model.overrides, state: state,
-                          pausedUntil: model.pausedUntil, calendar: .current)
+    func context() -> SchedulingContext {
+        SchedulingContext(settings: model?.settings ?? ShowtimeSettings(), overrides: model?.overrides ?? OverrideBook(),
+                          state: state, pausedUntil: model?.pausedUntil, calendar: .current)
     }
 
     private func save() {

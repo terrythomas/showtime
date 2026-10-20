@@ -38,6 +38,7 @@ final class StatusItemController: NSObject {
         if popover.isShown {
             popover.performClose(nil)
         } else if let button = item.button {
+            model.refreshEvents()
             NSApp.activate(ignoringOtherApps: true)
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
         }

@@ -173,3 +173,35 @@ import Testing
         #expect(back == book)
     }
 }
+
+@Suite struct WorkHoursNoteTests {
+    func ctx() -> SchedulingContext {
+        var s = ShowtimeSettings()
+        s.workHours = WorkHours(enabled: true, weekdays: [2, 3, 4, 5, 6], startMinute: 540, endMinute: 1020)
+        return SchedulingContext(settings: s, overrides: OverrideBook(), state: HandledStateBook(), pausedUntil: nil, calendar: nyCalendar)
+    }
+
+    @Test func meetingAtStartOfWorkHoursHasNoAlert() {
+        // Alert at 08:59 falls outside 09:00–17:00, so it will be dropped.
+        #expect(AlertScheduler.allAlertsOutsideWorkHours(event(start: at(9)), ctx: ctx()))
+    }
+
+    @Test func meetingInsideWorkHoursAlerts() {
+        #expect(!AlertScheduler.allAlertsOutsideWorkHours(event(start: at(10)), ctx: ctx()))
+    }
+
+    @Test func disabledWorkHoursNeverFlags() {
+        var c = ctx()
+        c.settings.workHours.enabled = false
+        #expect(!AlertScheduler.allAlertsOutsideWorkHours(event(start: at(9)), ctx: c))
+    }
+}
+
+@Suite struct AuthorizationTransitionTests {
+    @Test func grantingAccessNeedsFreshStore() {
+        #expect(needsFreshEventStore(previous: .denied, current: .fullAccess))
+        #expect(needsFreshEventStore(previous: .notDetermined, current: .fullAccess))
+        #expect(!needsFreshEventStore(previous: .fullAccess, current: .fullAccess))
+        #expect(!needsFreshEventStore(previous: .fullAccess, current: .denied))
+    }
+}

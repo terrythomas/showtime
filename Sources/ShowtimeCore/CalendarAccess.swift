@@ -1,4 +1,4 @@
-public enum CalendarAuthorization: Sendable {
+public enum CalendarAuthorization: Equatable, Sendable {
     case notDetermined, denied, restricted, fullAccess, writeOnly
 }
 
@@ -14,4 +14,9 @@ public func accessBanner(for authorization: CalendarAuthorization) -> AccessBann
     case .restricted: .restricted
     case .fullAccess: .none
     }
+}
+
+/// EventKit stores created before access was granted can keep returning no events.
+public func needsFreshEventStore(previous: CalendarAuthorization, current: CalendarAuthorization) -> Bool {
+    current == .fullAccess && previous != .fullAccess
 }

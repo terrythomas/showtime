@@ -121,7 +121,7 @@ import Testing
 
     @Test func inactiveCalendarExcluded() {
         var s = settings
-        s.activeCalendarIDs = ["work"]
+        s.disabledCalendarIDs = ["home"]
         #expect(!EventFilter.isListed(event(calendarID: "home"), settings: s))
         #expect(EventFilter.isListed(event(calendarID: "work"), settings: s))
     }
@@ -133,5 +133,18 @@ import Testing
         #expect(EventFilter.isListed(e, settings: settings))
         #expect(!EventFilter.isAlertable(e, settings: settings, overrides: book))
         #expect(EventFilter.isAlertable(e, settings: settings, overrides: OverrideBook()))
+    }
+}
+
+@Suite struct CalendarSelectionTests {
+    @Test func calendarAddedLaterIsIncluded() {
+        var s = ShowtimeSettings()
+        s.disabledCalendarIDs = ["home"]
+        #expect(!EventFilter.isListed(event(calendarID: "home"), settings: s))
+        #expect(EventFilter.isListed(event(calendarID: "brand-new"), settings: s))
+    }
+
+    @Test func defaultHasNothingDisabled() {
+        #expect(ShowtimeSettings().disabledCalendarIDs.isEmpty)
     }
 }

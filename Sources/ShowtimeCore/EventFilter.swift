@@ -3,7 +3,7 @@ import Foundation
 public enum EventFilter {
     /// Whether the event appears in the menu at all.
     public static func isListed(_ e: CalendarEvent, settings: ShowtimeSettings) -> Bool {
-        if let active = settings.activeCalendarIDs, !active.contains(e.calendarID) { return false }
+        if settings.disabledCalendarIDs.contains(e.calendarID) { return false }
         if e.myStatus == .declined { return false }
         if settings.onlyAccepted, ![.accepted, .organizer, .notInvited].contains(e.myStatus) { return false }
         if e.isAllDay, !settings.includeAllDay { return false }

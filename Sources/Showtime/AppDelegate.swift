@@ -17,6 +17,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             NSLog("Showtime alert: %@", events.map(\.title).joined(separator: ", "))
             alerts.present(events)
         }
+        // An accessory app with no windows gets App Nap, which can delay alert timers.
+        appNapBlocker = ProcessInfo.processInfo.beginActivity(
+            options: .userInitiatedAllowingIdleSystemSleep, reason: "Meeting alerts must fire on time")
         model.start()
         applyHotkeys()
         hotkeyObserver = model.$settings.map(\.hotkeys).removeDuplicates().dropFirst()
@@ -24,6 +27,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private var hotkeyObserver: AnyCancellable?
+    private var appNapBlocker: NSObjectProtocol?
 
     private func applyHotkeys() {
         HotkeyCenter.shared.apply(model.settings.hotkeys) { [weak self] action in

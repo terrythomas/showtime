@@ -12,7 +12,7 @@ import Testing
         #expect(s.autoCloseMinutes == 15)
         #expect(s.soundName == "Glass")
         #expect(s.screenMode == .active)
-        #expect(s.activeCalendarIDs == nil)
+        #expect(s.disabledCalendarIDs.isEmpty)
         #expect(s.allDayAlertMinuteOfDay == 540)
         #expect(s.workHours.enabled == false)
         #expect(s.menuCountdown == .regular)
@@ -39,7 +39,7 @@ import Testing
         s.soundVolume = 0.5
         s.screenMode = .named("DELL U2720Q")
         s.shortcutDelaySeconds = 2
-        s.activeCalendarIDs = ["a", "b"]
+        s.disabledCalendarIDs = ["a", "b"]
         s.onlyAccepted = true
         s.onlyWithVideo = true
         s.includeAllDay = true

@@ -115,7 +115,7 @@ struct MenuView: View {
     private func row(_ e: CalendarEvent, now: Date) -> some View {
         let hasLink = !MeetingLinkDetector.links(in: e).isEmpty
         let hidden = model.isHidden(e)
-        let outsideHours = !model.settings.workHours.allows(e.start, calendar: .current)
+        let outsideHours = model.alertsBlockedByWorkHours(e)
         return Button {
             closeMenu()
             if !LinkOpener.join(e, model: model) { model.calendar.showInCalendar(e) }

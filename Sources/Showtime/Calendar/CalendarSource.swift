@@ -34,8 +34,11 @@ final class CalendarSource: ObservableObject {
         }
     }
 
+    /// Re-reads the live permission status; called before every fetch so a change made in
+    /// System Settings while Showtime runs is noticed.
     func refreshAuthorization() {
-        authorization = switch EKEventStore.authorizationStatus(for: .event) {
+        let previous = authorization
+        let current: CalendarAuthorization = switch EKEventStore.authorizationStatus(for: .event) {
         case .notDetermined: .notDetermined
         case .restricted: .restricted
         case .denied: .denied
@@ -43,13 +46,13 @@ final class CalendarSource: ObservableObject {
         case .fullAccess, .authorized: .fullAccess
         @unknown default: .denied
         }
-        if authorization == .fullAccess { loadCalendars() }
+        if needsFreshEventStore(previous: previous, current: current) { store = EKEventStore() }
+        if current != authorization { authorization = current }
+        if current == .fullAccess { loadCalendars() }
     }
 
     func requestAccess() async {
         _ = try? await store.requestFullAccessToEvents()
-        // A store created before access was granted can keep returning nothing.
-        store = EKEventStore()
         refreshAuthorization()
         onChange?()
     }

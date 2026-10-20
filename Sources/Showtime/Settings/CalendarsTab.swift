@@ -4,8 +4,6 @@ struct CalendarsTab: View {
     @ObservedObject var model: AppModel
     @ObservedObject var calendar: CalendarSource
 
-    private var allIDs: Set<String> { Set(calendar.calendarGroups.flatMap { $0.calendars.map(\.id) }) }
-
     var body: some View {
         Form {
             if calendar.calendarGroups.isEmpty {
@@ -34,11 +32,9 @@ struct CalendarsTab: View {
 
     private func binding(for id: String) -> Binding<Bool> {
         Binding {
-            model.settings.activeCalendarIDs?.contains(id) ?? true
+            !model.settings.disabledCalendarIDs.contains(id)
         } set: { on in
-            var active = model.settings.activeCalendarIDs ?? allIDs
-            if on { active.insert(id) } else { active.remove(id) }
-            model.settings.activeCalendarIDs = active == allIDs ? nil : active
+            if on { model.settings.disabledCalendarIDs.remove(id) } else { model.settings.disabledCalendarIDs.insert(id) }
         }
     }
 }

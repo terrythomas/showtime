@@ -69,4 +69,11 @@ public enum AlertScheduler {
         if let pause = ctx.pausedUntil, pause > now { candidates.append(pause) }
         return candidates.min()
     }
+
+    /// True when work hours will drop every remaining alert for the event, so the menu can say so.
+    public static func allAlertsOutsideWorkHours(_ e: CalendarEvent, ctx: SchedulingContext) -> Bool {
+        guard ctx.settings.workHours.enabled else { return false }
+        let times = fireTimes(for: e, ctx: ctx)
+        return !times.isEmpty && times.allSatisfy { !ctx.settings.workHours.allows($0, calendar: ctx.calendar) }
+    }
 }
