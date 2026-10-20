@@ -132,4 +132,3 @@ public struct WorkHours: Codable, Equatable, Sendable {
     public init() {}
 }
 
-public struct ExclusionRule: Codable, Hashable, Sendable {}
