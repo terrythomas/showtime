@@ -126,9 +126,4 @@ public struct ShowtimeSettings: Codable, Equatable, Sendable {
     }
 }
 
-// Replaced in later tasks.
-public struct WorkHours: Codable, Equatable, Sendable {
-    public var enabled = false
-    public init() {}
-}
 
